@@ -1,38 +1,39 @@
-name: Update Copernicus Data
+name: Actualizar SST + Corrientes
 
 on:
   schedule:
-    - cron: '0 6 * * *'   # Ejecuta cada día a las 06:00 UTC
-  workflow_dispatch:
+    - cron: '0 8 * * *'  # Ejecuta todos los días a las 8:00 UTC
+  workflow_dispatch:  # Permite ejecutarlo manualmente desde GitHub
 
 jobs:
-  update-data:
+  update_figures:
     runs-on: ubuntu-latest
 
+    env:
+      COPERNICUS_USERNAME: ${{ secrets.COPERNICUS_USERNAME }}
+      COPERNICUS_PASSWORD: ${{ secrets.COPERNICUS_PASSWORD }}
+
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
       - name: Install dependencies
         run: |
-          pip install copernicusmarine xarray matplotlib cartopy numpy
+          python -m pip install --upgrade pip
+          pip install numpy matplotlib cartopy xarray copernicusmarine
 
-      - name: Login Copernicus
-        run: |
-          copernicusmarine login --username ${{ secrets.COPERNICUS_USERNAME }} --password ${{ secrets.COPERNICUS_PASSWORD }}
-
-      - name: Run script
+      - name: Run auto script
         run: python script_auto.py
 
-      - name: Commit and push if changed
+      - name: Commit latest.png
         run: |
-          git config --local user.name "github-actions"
-          git config --local user.email "actions@github.com"
-          git add .
-          git commit -m "Automatic update" || echo "No changes"
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add figures/latest.png
+          git commit -m "Actualizar latest.png automáticamente" || echo "No changes to commit"
           git push
