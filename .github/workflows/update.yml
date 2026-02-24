@@ -1,0 +1,38 @@
+name: Update Copernicus Data
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # Ejecuta cada día a las 06:00 UTC
+  workflow_dispatch:
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install copernicusmarine xarray matplotlib cartopy numpy
+
+      - name: Login Copernicus
+        run: |
+          copernicusmarine login --username ${{ secrets.COPERNICUS_USERNAME }} --password ${{ secrets.COPERNICUS_PASSWORD }}
+
+      - name: Run script
+        run: python script_auto.py
+
+      - name: Commit and push if changed
+        run: |
+          git config --local user.name "github-actions"
+          git config --local user.email "actions@github.com"
+          git add .
+          git commit -m "Automatic update" || echo "No changes"
+          git push
