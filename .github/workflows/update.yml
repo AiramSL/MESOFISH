@@ -28,7 +28,7 @@ jobs:
           pip install numpy matplotlib cartopy xarray copernicusmarine
 
       - name: Run auto script
-        run: python script_auto.py
+        run: python MESOFISH_webpy/scripts/script_auto.py
 
       - name: Commit latest.png
         run: |
