@@ -31,11 +31,11 @@ copernicusmarine.login(
     password=os.environ.get("COPERNICUS_PASSWORD")
 )
 
-out_dir = "data/NC_copernicus"
-os.makedirs(out_dir, exist_ok=True)
+#out_dir = "data/NC_copernicus"
+#os.makedirs(out_dir, exist_ok=True)
 
 # Descargar thetao
-copernicusmarine.subset(
+ds_sst = copernicusmarine.open_dataset(
     dataset_id="cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
     variables=["thetao"],
     minimum_longitude=-16.5,
@@ -43,13 +43,10 @@ copernicusmarine.subset(
     minimum_latitude=26.2,
     maximum_latitude=29.5,
     start_datetime="2026-02-01",
-    end_datetime="2026-02-01",
-    output_filename="thetao.nc",
-    output_directory=out_dir
+    end_datetime="2026-02-01"
 )
 
-# Descargar corrientes
-copernicusmarine.subset(
+ds_cur = copernicusmarine.open_dataset(
     dataset_id="cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m",
     variables=["uo", "vo"],
     minimum_longitude=-16.5,
@@ -57,14 +54,10 @@ copernicusmarine.subset(
     minimum_latitude=26.2,
     maximum_latitude=29.5,
     start_datetime="2026-02-01",
-    end_datetime="2026-02-01",
-    output_filename="currents.nc",
-    output_directory=out_dir
+    end_datetime="2026-02-01"
 )
 
-# Abrir NC con xarray
-ds_sst = xr.open_dataset(os.path.join(out_dir, "thetao.nc"))
-ds_cur = xr.open_dataset(os.path.join(out_dir, "currents.nc"))
+
 
 # -----------------------------
 # Seleccionar superficie
