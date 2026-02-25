@@ -38,13 +38,16 @@ jobs:
       - name: Run auto script
         run: python scripts/script_auto.py
 
+      # 5️⃣ Verificar que las figuras existen (opcional pero recomendado)
+      - name: List generated figures
+        run: ls -l figures/
 
-      # 5️⃣ Commit + push todas las figuras
-- name: Commit and push figures
-  run: |
-    git config user.name "github-actions"
-    git config user.email "actions@github.com"
-    git add figures/*
-    git commit -m "Actualizar figuras automáticamente" || echo "No changes to commit"
-    git pull --rebase origin main
-    git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/AiramSL/MESOFISH.git main
+      # 6️⃣ Commit + push todas las figuras
+      - name: Commit and push figures
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add figures/*
+          git commit -m "Actualizar figuras automáticamente" || echo "No changes to commit"
+          git pull --rebase origin main
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main
