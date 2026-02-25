@@ -142,9 +142,6 @@ print("Figura guardada como latest.png")
 
 ##### serie temporal
 
-# Carpeta de salida
-out_dir = "figures"
-os.makedirs(out_dir, exist_ok=True)
 
 # Abrir dataset
 ds_bgc = copernicusmarine.open_dataset(
@@ -174,14 +171,38 @@ df = pd.DataFrame({
 df.set_index("Date", inplace=True)
 
 # Graficar
-fig, ax = plt.subplots(figsize=(10,6))
-df.plot(ax=ax, marker='o', linestyle='-')
-ax.set_title("Serie temporal de zooplancton, NPP y micronekton\nPunto Lon=-15.2976, Lat=28.1617")
-ax.set_xlabel("Fecha")
-ax.set_ylabel("Biomasa / NPP")
-ax.grid(True)
+# Suponiendo que df tiene columnas: "zooc", "mnkc_epi", "npp" y "time"
+fig, axes = plt.subplots(nrows=3, ncols=1, figsize=(10,12), sharex=True)
+
+# Panel 1: Zooplancton
+# Panel 1: Zooplancton
+axes[0].plot(df.index, df["Zooplankton (g/m²)"], marker='o', linestyle='-')
+axes[0].set_ylabel("Zooplankton [g/m²]")
+axes[0].set_title("Serie temporal en Lon=-15.2976, Lat=28.1617")
+axes[0].grid(True)
+
+# Panel 2: Epipelagic micronekton
+axes[1].plot(df.index, df["Epipelagic micronekton (g/m²)"], marker='o', linestyle='-', color='orange')
+axes[1].set_ylabel("Epipelagic micronekton [g/m²]")
+axes[1].grid(True)
+
+# Panel 3: NPP
+axes[2].plot(df.index, df["NPP (mg/m²/day)"], marker='o', linestyle='-', color='green')
+axes[2].set_ylabel("Net Primary Productivity [mg/m²/day]")
+axes[2].set_xlabel("Fecha")
+axes[2].grid(True)
 
 plt.tight_layout()
-plt.savefig(os.path.join(out_dir, "series_temporal_point.png"), dpi=150)
+
+
+SERIE_path = os.path.join(out_path, "series_temporal_point.png")
+fig.savefig(SERIE_path, dpi=150, bbox_inches='tight')
 plt.close(fig)
+
 print("Serie temporal guardada como series_temporal_point.png")
+
+
+
+
+
+
