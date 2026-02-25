@@ -44,5 +44,9 @@ jobs:
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add figures/latest.png figures/series_temporal_point.png
-          git commit -m "Actualizar figuras automáticamente" || echo "No changes to commit"
+          git add figures/latest.png \
+            figures/series_temporal_point.png \
+            figures/SSTgeo.png \
+            figures/CHLgeo.png \
+            figures/SSHgeo.png
           git push
