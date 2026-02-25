@@ -63,8 +63,8 @@ copernicusmarine.subset(
 )
 
 # Abrir NC con xarray
-ds_sst = xr.open_dataset(os.path.join(out_dir, "thetao.nc"), engine="netcdf4")
-ds_cur = xr.open_dataset(os.path.join(out_dir, "currents.nc"), engine="netcdf4")
+ds_sst = xr.open_dataset(os.path.join(out_dir, "thetao.nc"))
+ds_cur = xr.open_dataset(os.path.join(out_dir, "currents.nc"))
 
 # -----------------------------
 # Seleccionar superficie
