@@ -14,30 +14,34 @@ jobs:
       COPERNICUS_PASSWORD: ${{ secrets.COPERNICUS_PASSWORD }}
 
     steps:
+      # 1️⃣ Clonar el repositorio
       - name: Checkout repo
         uses: actions/checkout@v3
 
+      # 2️⃣ Configurar Python
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.12'
 
+      # 3️⃣ Instalar dependencias
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install numpy matplotlib cartopy xarray h5py netCDF4
           pip install --upgrade copernicusmarine
 
+      # 4️⃣ Ejecutar script de generación de figura
       - name: Run auto script
         run: python scripts/script_auto.py
 
-      - name: Commit latest.png
+      # 5️⃣ Commit + push seguro de latest.png
+      - name: Commit and push latest.png
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add figures/latest.png
           git commit -m "Actualizar latest.png automáticamente" || echo "No changes to commit"
-          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
-          git push
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git" HEAD:main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
