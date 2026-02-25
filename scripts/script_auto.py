@@ -399,7 +399,7 @@ SSHgeo_path = os.path.join(out_path, "SSHgeo.png")
 fig.savefig(SSHgeo_path, dpi=150, bbox_inches='tight')
 plt.close(fig)
 
-print("Figura guardada como SSLgeo.png")
+print("Figura guardada como SSHgeo.png")
 
 
 
