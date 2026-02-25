@@ -23,6 +23,7 @@ import cartopy.feature as cfeature
 from matplotlib.ticker import MaxNLocator
 import xarray as xr
 from datetime import datetime
+import pandas as pd
 
 today = datetime.utcnow().strftime("%Y-%m-%d")
 
@@ -134,3 +135,53 @@ fig.savefig(latest_path, dpi=150, bbox_inches='tight')
 plt.close(fig)
 
 print("Figura guardada como latest.png")
+
+
+
+
+
+##### serie temporal
+
+# Carpeta de salida
+out_dir = "figures"
+os.makedirs(out_dir, exist_ok=True)
+
+# Abrir dataset
+ds_bgc = copernicusmarine.open_dataset(
+    dataset_id="cmems_mod_glo_bgc_my_0.083deg-lmtl_P1D-i",
+    variables=["zooc", "npp", "mnkc_epi"],
+    minimum_longitude=-15.2976,
+    maximum_longitude=-15.2976,
+    minimum_latitude=28.1617,
+    maximum_latitude=28.1617,
+    start_datetime="2020-01-01",  # la fecha más lejana disponible
+    end_datetime="2026-02-01"
+)
+
+# Extraer series temporales del punto
+time = ds_bgc.time.values
+zooc = ds_bgc["zooc"].isel(latitude=0, longitude=0).values
+npp  = ds_bgc["npp"].isel(latitude=0, longitude=0).values
+mnkc = ds_bgc["mnkc_epi"].isel(latitude=0, longitude=0).values
+
+# Crear DataFrame para gráfico
+df = pd.DataFrame({
+    "Date": pd.to_datetime(time),
+    "Zooplankton (g/m²)": zooc,
+    "NPP (mg/m²/day)": npp,
+    "Epipelagic micronekton (g/m²)": mnkc
+})
+df.set_index("Date", inplace=True)
+
+# Graficar
+fig, ax = plt.subplots(figsize=(10,6))
+df.plot(ax=ax, marker='o', linestyle='-')
+ax.set_title("Serie temporal de zooplancton, NPP y micronekton\nPunto Lon=-15.2976, Lat=28.1617")
+ax.set_xlabel("Fecha")
+ax.set_ylabel("Biomasa / NPP")
+ax.grid(True)
+
+plt.tight_layout()
+plt.savefig(os.path.join(out_dir, "series_temporal_point.png"), dpi=150)
+plt.close(fig)
+print("Serie temporal guardada como series_temporal_point.png")
