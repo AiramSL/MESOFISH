@@ -58,8 +58,8 @@ copernicusmarine.subset(
     maximum_latitude=29.5,
     start_datetime="2026-02-01",
     end_datetime="2026-02-01",
-    minimum_depth=0.494,
-    maximum_depth=0.494,
+    #minimum_depth=0.494,
+    #maximum_depth=0.494,
     output_filename="thetao.nc",
     output_directory=out_dir
 )
@@ -76,8 +76,8 @@ copernicusmarine.subset(
     maximum_latitude=29.5,
     start_datetime="2026-02-01",
     end_datetime="2026-02-01",
-    minimum_depth=0.494,
-    maximum_depth=0.494,
+    #minimum_depth=0.494,
+    #maximum_depth=0.494,
     output_filename="currents.nc",
     output_directory=out_dir
 )
