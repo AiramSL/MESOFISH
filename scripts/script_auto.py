@@ -22,6 +22,9 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from matplotlib.ticker import MaxNLocator
 import xarray as xr
+from datetime import datetime
+
+today = datetime.utcnow().strftime("%Y-%m-%d")
 
 # -----------------------------
 # Login Copernicus
@@ -42,8 +45,8 @@ ds_sst = copernicusmarine.open_dataset(
     maximum_longitude=-13,
     minimum_latitude=26.2,
     maximum_latitude=29.5,
-    start_datetime="2026-02-01",
-    end_datetime="2026-02-01"
+    start_datetime=today,
+    end_datetime=today
 )
 
 ds_cur = copernicusmarine.open_dataset(
@@ -53,8 +56,8 @@ ds_cur = copernicusmarine.open_dataset(
     maximum_longitude=-13,
     minimum_latitude=26.2,
     maximum_latitude=29.5,
-    start_datetime="2026-02-01",
-    end_datetime="2026-02-01"
+    start_datetime=today,
+    end_datetime=today
 )
 
 
