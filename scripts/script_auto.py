@@ -33,6 +33,19 @@ copernicusmarine.login(username=os.environ.get("COPERNICUS_USERNAME"),
 out_dir = "data/NC_copernicus"
 os.makedirs(out_dir, exist_ok=True)
 
+
+### para borrar archivos existentes
+import os
+
+thetao_path = os.path.join(out_dir, "thetao.nc")
+currents_path = os.path.join(out_dir, "currents.nc")
+
+if os.path.exists(thetao_path):
+    os.remove(thetao_path)
+
+if os.path.exists(currents_path):
+    os.remove(currents_path)
+
 # -----------------------------
 # 1️⃣ Descargar temperatura (thetao)
 # -----------------------------
@@ -45,8 +58,8 @@ copernicusmarine.subset(
     maximum_latitude=29.5,
     start_datetime="2026-02-01",
     end_datetime="2026-02-01",
-    minimum_depth=0,
-    maximum_depth=1,
+    minimum_depth=0.494,
+    maximum_depth=0.494,
     output_filename="thetao.nc",
     output_directory=out_dir
 )
@@ -76,8 +89,13 @@ file_path = out_dir
 out_path = "figures"
 os.makedirs(out_path, exist_ok=True)
 
-ds_sst = xr.open_dataset(os.path.join(file_path, "thetao.nc"))
-ds_cur = xr.open_dataset(os.path.join(file_path, "currents.nc"))
+ds_sst = xr.open_dataset(
+    os.path.join(file_path, "thetao.nc"),
+    engine="netcdf4")
+
+ds_cur = xr.open_dataset(
+    os.path.join(file_path, "currents.nc"),
+    engine="netcdf4")
 
 lat_min, lat_max = 26.2, 29.5
 lon_min, lon_max = -16.5, -13
