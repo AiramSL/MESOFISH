@@ -2,7 +2,7 @@ name: Actualizar SST + Corrientes
 
 on:
   schedule:
-    - cron: '0 8 * * *'  # Ejecuta todos los días a las 8:00 UTC
+    - cron: '0 6 * * *'  # Ejecuta todos los días a las 6:00 UTC
   workflow_dispatch:
 
 permissions:
