@@ -500,7 +500,7 @@ ax_a.text(-0.15, 1.02, '(A)', transform=ax_a.transAxes, fontsize=24, fontweight=
 # Ejes secundarios Panel A
 ax_sal_a = ax_a.twiny()
 ax_sal_a.plot(ds_a.so, depth_a, color='forestgreen', linewidth=4)
-ax_sal_a.set_xlabel('Salinity (PSU)', fontsize=20, fontweight='bold', color='forestgreen')
+ax_sal_a.set_xlabel('Salinity', fontsize=20, fontweight='bold', color='forestgreen')
 ax_sal_a.tick_params(axis='x', labelsize=16, labelcolor='forestgreen')
 
 ax_o2_a = ax_a.twiny()
@@ -545,7 +545,7 @@ ax_b.text(-0.15, 1.02, '(B)', transform=ax_b.transAxes, fontsize=24, fontweight=
 # Ejes secundarios Panel B
 ax_sal_b = ax_b.twiny()
 ax_sal_b.plot(ds_b.so, depth_b, color='forestgreen', linewidth=4)
-ax_sal_b.set_xlabel('Salinity (PSU)', fontsize=20, fontweight='bold', color='forestgreen')
+ax_sal_b.set_xlabel('Salinity', fontsize=20, fontweight='bold', color='forestgreen')
 ax_sal_b.tick_params(axis='x', labelsize=16, labelcolor='forestgreen')
 
 ax_o2_b = ax_b.twiny()
@@ -574,3 +574,10 @@ ax_map_b.text(0.5, 1.05, f'{today}', transform=ax_map_b.transAxes,
 
 plt.tight_layout()
 plt.show()
+
+
+Perfil_path = os.path.join(out_path, "Profiles.png")
+fig.savefig(Perfil_path, dpi=150, bbox_inches='tight')
+plt.close(fig)
+
+print("Figura guardada como Profiles.png")
