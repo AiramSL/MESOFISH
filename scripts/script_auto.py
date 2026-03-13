@@ -403,3 +403,174 @@ print("Figura guardada como SSHgeo.png")
 
 
 
+
+
+
+######## PERFEILES VERTICALES
+
+import copernicusmarine
+import xarray as xr
+import matplotlib.pyplot as plt
+from datetime import datetime, UTC
+
+today = datetime.now(UTC).strftime("%Y-%m-%d")
+
+# BIOGEOQUÍMICO
+ds_BIO = copernicusmarine.open_dataset(
+    dataset_id="cmems_mod_ibi_bgc_anfc_0.027deg-3D_P1D-m",
+    variables=["chl", "o2"],
+    minimum_longitude=-16.5,
+    maximum_longitude=-13,
+    minimum_latitude=26.2,
+    maximum_latitude=29.5,
+    minimum_depth=0.5,   # o 1.0, algo > 0.494...
+    maximum_depth=1000,
+    start_datetime=today,
+    end_datetime=today
+)
+
+# FÍSICO
+ds_PHY = copernicusmarine.open_dataset(
+    dataset_id="cmems_mod_ibi_phy_anfc_0.027deg-3D_P1D-m",
+    variables=["thetao", "so", "mlotst"],
+    minimum_longitude=-16.5,
+    maximum_longitude=-13,
+    minimum_latitude=26.2,
+    maximum_latitude=29.5,
+    minimum_depth=0.5,
+    maximum_depth=1000,
+    start_datetime=today,
+    end_datetime=today
+)
+
+print("=== ds_BIO ===")
+print("Dimensiones:", ds_BIO.dims)
+print("Coordenadas:", list(ds_BIO.coords.keys()))
+print("Variables:", list(ds_BIO.data_vars.keys()))
+
+print("\n=== ds_PHY ===")
+print("Dimensiones:", ds_PHY.dims)
+print("Coordenadas:", list(ds_PHY.coords.keys()))
+print("Variables:", list(ds_PHY.data_vars.keys()))
+
+
+
+points = {
+    "Point_1": {"lon": -15.25, "lat": 28.1005},
+    "Point_2": {"lon": -15.7152, "lat": 27.6164}
+}
+
+def extract_profile(ds, lon, lat):
+    return ds.sel(longitude=lon, latitude=lat, method="nearest").squeeze()
+
+profiles = {}
+
+# Extraer perfiles
+for name, p in points.items():
+    phy = extract_profile(ds_PHY, p["lon"], p["lat"])
+    bio = extract_profile(ds_BIO, p["lon"], p["lat"])
+    profiles[name] = xr.merge([phy, bio], compat="no_conflicts")
+
+
+
+
+import matplotlib.pyplot as plt
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
+
+# UNA SOLA FIGURA con 2 paneles horizontales
+fig = plt.figure(figsize=(16, 12))
+
+# === PANEL A: Point_1 ===
+ds_a = profiles["Point_1"]
+depth_a = ds_a.depth
+lon_a, lat_a = ds_a.longitude.values, ds_a.latitude.values
+
+# Perfiles Panel A
+ax_a = fig.add_axes([0.05, 0.12, 0.35, 0.72])  
+ax_a.plot(ds_a.thetao, depth_a, color='steelblue', linewidth=4)
+ax_a.set_xlabel('Temperature (°C)', fontsize=20, fontweight='bold')
+ax_a.set_ylabel('Depth (m)', fontsize=20, fontweight='bold')
+ax_a.invert_yaxis()
+ax_a.set_ylim(1000, 0)
+ax_a.tick_params(labelsize=16)
+ax_a.grid(alpha=0.3, linewidth=1.2)
+ax_a.text(-0.15, 1.02, '(A)', transform=ax_a.transAxes, fontsize=24, fontweight='bold')
+
+# Ejes secundarios Panel A
+ax_sal_a = ax_a.twiny()
+ax_sal_a.plot(ds_a.so, depth_a, color='forestgreen', linewidth=4)
+ax_sal_a.set_xlabel('Salinity (PSU)', fontsize=20, fontweight='bold', color='forestgreen')
+ax_sal_a.tick_params(axis='x', labelsize=16, labelcolor='forestgreen')
+
+ax_o2_a = ax_a.twiny()
+ax_o2_a.spines['top'].set_position(('outward', 45))
+ax_o2_a.plot(ds_a.o2, depth_a, color='darkred', linewidth=4)
+ax_o2_a.set_xlabel('O₂ (mol m⁻³)', fontsize=20, fontweight='bold', color='darkred')
+ax_o2_a.tick_params(axis='x', labelsize=16, labelcolor='darkred')
+
+ax_chl_a = ax_a.twiny()
+ax_chl_a.spines['top'].set_position(('outward', 90))
+ax_chl_a.plot(ds_a.chl, depth_a, color='purple', linewidth=4)
+ax_chl_a.set_xlabel('Chl-a (mg m⁻³)', fontsize=20, fontweight='bold', color='purple')
+ax_chl_a.tick_params(axis='x', labelsize=16, labelcolor='purple')
+
+# Mapa Panel A
+ax_map_a = fig.add_axes([0.15, 0.15, 0.27, 0.22], projection=ccrs.PlateCarree())
+ax_map_a.set_extent([-15.9, -15.2, 27.5, 28.2], crs=ccrs.PlateCarree())
+ax_map_a.add_feature(cfeature.COASTLINE, linewidth=1.0)
+ax_map_a.add_feature(cfeature.LAND, facecolor='wheat', edgecolor='saddlebrown', linewidth=0.6)
+ax_map_a.add_feature(cfeature.OCEAN, facecolor='lightblue', alpha=0.8)
+ax_map_a.plot(lon_a, lat_a, 'ro', markersize=8, transform=ccrs.PlateCarree(), 
+              markeredgecolor='darkred', markeredgewidth=1.5, zorder=10)
+ax_map_a.text(0.5, 1.05, f'{today}', transform=ax_map_a.transAxes, 
+              ha='center', va='bottom', fontsize=10, fontweight='bold',
+              bbox=dict(boxstyle='round,pad=0.3', facecolor='white', edgecolor='black'))
+
+# === PANEL B: Point_2 ===
+ds_b = profiles["Point_2"]
+depth_b = ds_b.depth
+lon_b, lat_b = ds_b.longitude.values, ds_b.latitude.values
+
+# Perfiles Panel B  
+ax_b = fig.add_axes([0.55, 0.12, 0.35, 0.72])
+ax_b.plot(ds_b.thetao, depth_b, color='steelblue', linewidth=4)
+ax_b.set_xlabel('Temperature (°C)', fontsize=20, fontweight='bold')
+ax_b.invert_yaxis()
+ax_b.set_ylim(1000, 0)
+ax_b.tick_params(labelsize=16)
+ax_b.grid(alpha=0.3, linewidth=1.2)
+ax_b.text(-0.15, 1.02, '(B)', transform=ax_b.transAxes, fontsize=24, fontweight='bold')
+
+# Ejes secundarios Panel B
+ax_sal_b = ax_b.twiny()
+ax_sal_b.plot(ds_b.so, depth_b, color='forestgreen', linewidth=4)
+ax_sal_b.set_xlabel('Salinity (PSU)', fontsize=20, fontweight='bold', color='forestgreen')
+ax_sal_b.tick_params(axis='x', labelsize=16, labelcolor='forestgreen')
+
+ax_o2_b = ax_b.twiny()
+ax_o2_b.spines['top'].set_position(('outward', 45))
+ax_o2_b.plot(ds_b.o2, depth_b, color='darkred', linewidth=4)
+ax_o2_b.set_xlabel('O₂ (mol m⁻³)', fontsize=20, fontweight='bold', color='darkred')
+ax_o2_b.tick_params(axis='x', labelsize=16, labelcolor='darkred')
+
+ax_chl_b = ax_b.twiny()
+ax_chl_b.spines['top'].set_position(('outward', 90))
+ax_chl_b.plot(ds_b.chl, depth_b, color='purple', linewidth=4)
+ax_chl_b.set_xlabel('Chl-a (mg m⁻³)', fontsize=20, fontweight='bold', color='purple')
+ax_chl_b.tick_params(axis='x', labelsize=16, labelcolor='purple')
+
+# Mapa Panel B
+ax_map_b = fig.add_axes([0.65, 0.15, 0.27, 0.22], projection=ccrs.PlateCarree())
+ax_map_b.set_extent([-15.9, -15.2, 27.5, 28.2], crs=ccrs.PlateCarree())
+ax_map_b.add_feature(cfeature.COASTLINE, linewidth=1.0)
+ax_map_b.add_feature(cfeature.LAND, facecolor='wheat', edgecolor='saddlebrown', linewidth=0.6)
+ax_map_b.add_feature(cfeature.OCEAN, facecolor='lightblue', alpha=0.8)
+ax_map_b.plot(lon_b, lat_b, 'ro', markersize=8, transform=ccrs.PlateCarree(), 
+              markeredgecolor='darkred', markeredgewidth=1.5, zorder=10)
+ax_map_b.text(0.5, 1.05, f'{today}', transform=ax_map_b.transAxes, 
+              ha='center', va='bottom', fontsize=10, fontweight='bold',
+              bbox=dict(boxstyle='round,pad=0.3', facecolor='white', edgecolor='black'))
+
+plt.tight_layout()
+plt.show()
