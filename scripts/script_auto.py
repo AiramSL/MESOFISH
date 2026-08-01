@@ -23,9 +23,10 @@ import cartopy.feature as cfeature
 from matplotlib.ticker import MaxNLocator
 import xarray as xr
 import pandas as pd
-from datetime import datetime
 
-today = datetime.utcnow().strftime("%Y-%m-%d")
+from datetime import datetime, UTC
+
+today = datetime.now(UTC).strftime("%Y-%m-%d")
 
 # -----------------------------
 # Login Copernicus
@@ -222,9 +223,10 @@ print("Figura guardada como SSTgeo.png")
 # -----------------------------
 # 4️⃣ CHL + flujo geostrófico
 # -----------------------------
+### el que usabamos "cmems_obs-oc_atl_bgc-plankton_my_l4-gapfree-multi-1km_P1D"
 ds_CHL = copernicusmarine.open_dataset(
-    dataset_id="cmems_obs-oc_atl_bgc-plankton_my_l4-gapfree-multi-1km_P1D",
-    variables=["CHL"],
+    dataset_id="cmems_mod_ibi_bgc_anfc_0.027deg-3D_P1D-m",
+    variables=["chl"],
     minimum_longitude=-16.5,
     maximum_longitude=-13,
     minimum_latitude=26.2,
@@ -239,7 +241,8 @@ lons_chl = ds_CHL_day["longitude"].values
 lats_chl = ds_CHL_day["latitude"].values
 lon2d_chl, lat2d_chl = np.meshgrid(lons_chl, lats_chl)
 
-chl = ds_CHL_day["CHL"].values
+#chl = ds_CHL_day["chl"].values
+chl = ds_CHL_day["chl"].sel(depth=0, method="nearest").values
 
 ## Crear figura
 fig = plt.figure(figsize=(8,6))
@@ -268,7 +271,7 @@ ugeo_interp = ugeo_da.interp(latitude=lats_chl, longitude=lons_chl)
 vgeo_interp = vgeo_da.interp(latitude=lats_chl, longitude=lons_chl)
 
 # Quiver
-step = 10  # submuestreo para no saturar flechas
+step = 5  # submuestreo para no saturar flechas
 q = ax.quiver(
     lon2d_chl[::step, ::step],
     lat2d_chl[::step, ::step],
