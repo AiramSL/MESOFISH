@@ -132,7 +132,7 @@ q = ax.quiver(lon2d[::step,::step], lat2d[::step,::step],
 ax.quiverkey(q, 0.88, 0.04, 0.5, "0.5 m/s", labelpos='E', coordinates='axes', fontproperties={'size':10})
 ax.add_feature(cfeature.LAND.with_scale('10m'), facecolor='lightgrey')
 ax.add_feature(cfeature.COASTLINE.with_scale('10m'), linewidth=1.2)
-gl = ax.gridlines(draw_labels=True, linewidth=0)
+gl = ax.gridlines(draw_labels=False, linewidth=0)
 gl.top_labels = False
 gl.right_labels = False
 gl.left_labels = True
@@ -197,7 +197,7 @@ q = ax.quiver(lon2d[::step,::step], lat2d[::step,::step], ugeo[::step,::step], v
 ax.quiverkey(q, 0.88, 0.04, 0.5, "0.5 m/s", labelpos='E', coordinates='axes', fontproperties={'size':10})
 ax.add_feature(cfeature.LAND.with_scale('10m'), facecolor='lightgrey')
 ax.add_feature(cfeature.COASTLINE.with_scale('10m'), linewidth=1.2)
-gl = ax.gridlines(draw_labels=True, linewidth=0)
+gl = ax.gridlines(draw_labels=False, linewidth=0)
 gl.top_labels = False
 gl.right_labels = False
 gl.left_labels = True
@@ -288,7 +288,7 @@ ax.add_feature(cfeature.LAND.with_scale('10m'), facecolor='lightgrey')
 ax.add_feature(cfeature.COASTLINE.with_scale('10m'), linewidth=1.2)
 
 # Gridlines: solo izquierda y abajo
-gl = ax.gridlines(draw_labels=True, linewidth=0)
+gl = ax.gridlines(draw_labels=False, linewidth=0)
 gl.top_labels = False
 gl.right_labels = False
 gl.left_labels = True
@@ -378,7 +378,7 @@ ax.add_feature(cfeature.LAND.with_scale('10m'), facecolor='lightgrey')
 ax.add_feature(cfeature.COASTLINE.with_scale('10m'), linewidth=1.2)
 
 # Gridlines (solo etiquetas izquierda y abajo)
-gl = ax.gridlines(draw_labels=True, linewidth=0)
+gl = ax.gridlines(draw_labels=False, linewidth=0)
 gl.top_labels = False
 gl.right_labels = False
 gl.left_labels = True
